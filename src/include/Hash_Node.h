@@ -1,5 +1,5 @@
-#ifndef test
-#define test
+#ifndef HASH_NODE_H
+#define HASH_NODE_H
 class Hash_Node
 {
 private:
@@ -8,4 +8,4 @@ public:
     Hash_Node(/* args */);
     ~Hash_Node();
 };
-#endif // !1#define test
+#endif //
