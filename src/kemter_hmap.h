@@ -17,12 +17,14 @@ namespace kemter
         using Nodes = std::vector<NodePtr>;
         
         public:
-            kemter_hmap(): m_nodes(64) { }
+            kemter_hmap(): m_nodes(64, nullptr), m_node_count(0) { }
             std::size_t capacity () const;
             std::size_t size () const;
             void add(const Key& key, const Value& value);
             void remove(const Key& key);
+            void put(const Key& key, const Value& value);
         private:
+            std::size_t m_node_count;
             Nodes m_nodes;
             std::size_t hash(const Key& key);
     };
@@ -31,11 +33,28 @@ namespace kemter
     void kemter::kemter_hmap<Key, Value, Hash>::add(const Key& key, const Value& value)
     {
         auto index = this->hash(key);
+        if(this->m_nodes.at(index) != nullptr) {
+            /* ToDo: if the node exists, 
+            add the new node into the child node */
+        }
+
         if( index > (this->capacity() + 1) ) {
             this->m_nodes.resize(this->capacity() * index);
         }
+
         auto node = std::make_shared<Node>(key, value);
-        this->m_nodes[index] = node;
+        this->m_nodes.at(index) = node;
+        this->m_node_count++;
+    }
+
+    template <typename Key, typename Value, typename Hash>
+    void kemter::kemter_hmap<Key, Value, Hash>::put(const Key& key, const Value& value)
+    {
+        auto index = this->hash(key);
+        if(this->m_nodes.at(index) == nullptr) {
+            return;
+        }
+        this->m_nodes.at(index) = std::make_shared<Node>(key, value);
     }
 
     template <typename Key, typename Value, typename Hash>
@@ -45,15 +64,18 @@ namespace kemter
 
     template <typename Key, typename Value, typename Hash>
     std::size_t kemter::kemter_hmap<Key, Value, Hash>::size () const {
-        return this->m_nodes.size();
+        return this->m_node_count;
     }
 
     template <typename Key, typename Value, typename Hash>
     void kemter::kemter_hmap<Key, Value, Hash>::remove(const Key& key)
     {
-        std::size_t index = hash(key);
-        std::experimental::erase_if(this->m_nodes, [](Node& node) {
-        });
+        std::size_t index = this->hash(key);
+        if(this->m_nodes.at(index) == nullptr) {
+            return;
+        }
+        this->m_nodes.at(index) = nullptr;
+        this->m_node_count--;
     }
 
     template <typename Key, typename Value, typename Hash>
