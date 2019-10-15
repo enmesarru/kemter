@@ -5,8 +5,6 @@ file(GLOB Sources
 )
 
 add_executable(${TestName} ${Sources})
-target_link_libraries(${TestName} PUBLIC
-    gtest_main
-)
+target_link_libraries(${TestName} gtest_main)
 
 add_test(${TestName} ${TestName})
