@@ -2,7 +2,7 @@ include_directories(include)
 
 file(GLOB source_files
     "*.h"
-    "*.cpp"
+    "main.cpp"
 )
 
 add_executable(kemter ${source_files})

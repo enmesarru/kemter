@@ -15,9 +15,15 @@ namespace kemter
             kemter_hnode(const Key& key, const Value& value);
             Key getKey() const;
             Value getValue() const;
-            void setValue(Value value);
+            void setValue(const Value& value);
     };
 
+    template <typename Key, typename Value>
+    kemter::kemter_hnode<Key, Value>::kemter_hnode()
+    {
+
+    }
+    
     template<typename Key, typename Value>
     kemter_hnode<Key, Value>::kemter_hnode(const Key& key, const Value& value)
         : m_key(key), m_value(value), m_next(nullptr) { }
@@ -28,7 +34,7 @@ namespace kemter
     }
 
     template<typename Key, typename Value>
-    void kemter_hnode<Key, Value>::setValue(Value value) {
+    void kemter_hnode<Key, Value>::setValue(const Value& value) {
         m_value = value;
     }
 
