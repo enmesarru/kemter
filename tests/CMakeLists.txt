@@ -3,6 +3,7 @@ set(TestName KemterTests)
 file(GLOB Sources
     "KemterHMapTests.cpp"
     "KemterHNodeTests.cpp"
+    "KemterTypeTests.cpp"
 )
 
 add_executable(${TestName} ${Sources})

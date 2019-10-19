@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "kemter_hmap.h"
+#include "kemterdb.h"
 
 TEST(KemterMapTests, MapTest)
 {
