@@ -4,8 +4,11 @@
 #include <vector>
 #include <memory>
 #include <type_traits>
+#include <any>
+#include <iostream>
 #include <experimental/vector>
 #include "kemter_hnode.h"
+#include "kemter_types.h"
 
 namespace kemter
 {
@@ -20,6 +23,7 @@ namespace kemter
             kemter_hmap(): m_nodes(64, nullptr), m_node_count(0) { }
             std::size_t capacity () const;
             std::size_t size () const;
+            kemter::type::cast::TypeWrapper<std::any> get(const Key& key);
             void add(const Key& key, const Value& value);
             void remove(const Key& key);
             void put(const Key& key, const Value& value);
@@ -27,6 +31,34 @@ namespace kemter
             std::size_t m_node_count;
             Nodes m_nodes;
             std::size_t hash(const Key& key);
+    };
+
+    template <typename Key, typename Value, typename Hash>
+    kemter::type::cast::TypeWrapper<std::any> kemter::kemter_hmap<Key, Value, Hash>::get(const Key& key) {
+        auto index = this->hash(key);
+
+        const NodePtr& node = static_cast<NodePtr>(this->m_nodes.at(index));
+        const auto& value = node.get()->getValue();
+
+        const std::type_info& ti = value.type();
+
+        if(ti == typeid(kemter::type::cast::TypeWrapper<std::string>)) {
+
+            const auto& stype = std::any_cast<kemter::type::cast::TypeWrapper<std::string>>(value);
+            auto value = static_cast<kemter::type::cast::Type<std::string>*>(stype.get())->value();
+
+        } else if(ti == typeid(kemter::type::cast::TypeWrapper<int>)) {
+
+            const auto& itype = std::any_cast<kemter::type::cast::TypeWrapper<int>>(value);
+            auto value = static_cast<kemter::type::cast::Type<int>*>(itype.get())->value();
+
+        } else if(ti == typeid(kemter::type::cast::TypeWrapper<float>)) {
+
+            const auto& ftype = std::any_cast<kemter::type::cast::TypeWrapper<float>>(value);
+            auto value = static_cast<kemter::type::cast::Type<float>*>(ftype.get())->value();
+
+        }
+        return nullptr;
     };
 
     template <typename Key, typename Value, typename Hash>

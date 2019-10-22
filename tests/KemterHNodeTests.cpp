@@ -10,7 +10,7 @@ TEST(KemterNodeTests, NodeTest) {
     ASSERT_EQ(h.getKey(), key);
     ASSERT_EQ(h.getValue(), value);
 
-    kemter::kemter_hnode<std::string, size_t> q("test", 6234);
+    kemter::kemter_hnode<std::string, std::size_t> q("test", 6234);
     ASSERT_EQ(q.getKey(), "test");
     ASSERT_EQ(q.getValue(), 6234);
 }
