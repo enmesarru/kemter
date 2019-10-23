@@ -2,6 +2,7 @@
 #define basetype_H
 #include <string>
 #include <memory>
+#include <any>
 
 namespace kemter::type
 {
@@ -18,13 +19,19 @@ namespace kemter::type
     private:
         std::shared_ptr<T> m_value;
     };
-};
 
-namespace kemter::type::cast {
     template<typename T>
-    using Type = kemter::type::gdata_type<T>;
+    using Type = gdata_type<T>;
 
     template<typename T>
     using TypeWrapper = std::shared_ptr<Type<T>>;
-}
+
+    template<typename Value>
+    Value TypeParser(const std::any& data)
+    {
+        const auto& type = std::any_cast<TypeWrapper<Value>>(data);
+        const auto& value = std::any_cast<Type<Value>*>(type.get())->value();
+        return value;
+    }
+};
 #endif // !basetype_H

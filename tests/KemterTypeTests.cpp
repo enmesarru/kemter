@@ -1,5 +1,6 @@
 #include <memory>
 #include <any>
+#include <iostream>
 #include <gtest/gtest.h>
 #include "kemter_types.h"
 #include "kemter_hmap.h"
@@ -18,8 +19,13 @@ TEST(KemterTypeTest, TypeTest) {
     map.add("key3", value3);
 
     ASSERT_EQ(map.size(), 3);
+    
     const auto& test = map.get("key1");
     const auto& test2 = map.get("key2");
+    const auto& testNone = map.get("key6");
     const auto& test3 = map.get("key3");
 
+    ASSERT_EQ(std::any_cast<std::string>(test), "value1");
+    ASSERT_EQ(std::any_cast<int>(test2), 1123);
+    ASSERT_EQ(std::any_cast<float>(test3), 2.f);
 }

@@ -18,12 +18,14 @@ namespace kemter
         using Node = kemter_hnode<Key, Value>;
         using NodePtr = std::shared_ptr<Node>;
         using Nodes = std::vector<NodePtr>;
-        
+        enum  class ValueConstant {
+            NoneValue = 0x00
+        };
         public:
             kemter_hmap(): m_nodes(64, nullptr), m_node_count(0) { }
             std::size_t capacity () const;
             std::size_t size () const;
-            kemter::type::cast::TypeWrapper<std::any> get(const Key& key);
+            Value get(const Key& key);
             void add(const Key& key, const Value& value);
             void remove(const Key& key);
             void put(const Key& key, const Value& value);
@@ -34,31 +36,27 @@ namespace kemter
     };
 
     template <typename Key, typename Value, typename Hash>
-    kemter::type::cast::TypeWrapper<std::any> kemter::kemter_hmap<Key, Value, Hash>::get(const Key& key) {
+    Value kemter::kemter_hmap<Key, Value, Hash>::get(const Key& key) {
+
         auto index = this->hash(key);
+        auto item = this->m_nodes.at(index);
 
-        const NodePtr& node = static_cast<NodePtr>(this->m_nodes.at(index));
-        const auto& value = node.get()->getValue();
+        if(item == nullptr) {
+            return Value(ValueConstant::NoneValue);
+        }
 
+        const auto& value = static_cast<NodePtr>(item).get()->getValue();
         const std::type_info& ti = value.type();
 
-        if(ti == typeid(kemter::type::cast::TypeWrapper<std::string>)) {
-
-            const auto& stype = std::any_cast<kemter::type::cast::TypeWrapper<std::string>>(value);
-            auto value = static_cast<kemter::type::cast::Type<std::string>*>(stype.get())->value();
-
-        } else if(ti == typeid(kemter::type::cast::TypeWrapper<int>)) {
-
-            const auto& itype = std::any_cast<kemter::type::cast::TypeWrapper<int>>(value);
-            auto value = static_cast<kemter::type::cast::Type<int>*>(itype.get())->value();
-
-        } else if(ti == typeid(kemter::type::cast::TypeWrapper<float>)) {
-
-            const auto& ftype = std::any_cast<kemter::type::cast::TypeWrapper<float>>(value);
-            auto value = static_cast<kemter::type::cast::Type<float>*>(ftype.get())->value();
-
+        if(ti == typeid(kemter::type::TypeWrapper<std::string>)) {
+            return kemter::type::TypeParser<std::string>(value);
+        } else if(ti == typeid(kemter::type::TypeWrapper<int>)) {
+            return kemter::type::TypeParser<int>(value);
+        } else if(ti == typeid(kemter::type::TypeWrapper<float>)) {
+            return kemter::type::TypeParser<float>(value);
+        } else {
+            return Value(ValueConstant::NoneValue);
         }
-        return nullptr;
     };
 
     template <typename Key, typename Value, typename Hash>
