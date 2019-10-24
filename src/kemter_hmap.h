@@ -18,9 +18,7 @@ namespace kemter
         using Node = kemter_hnode<Key, Value>;
         using NodePtr = std::shared_ptr<Node>;
         using Nodes = std::vector<NodePtr>;
-        enum  class ValueConstant {
-            NoneValue = 0x00
-        };
+
         public:
             kemter_hmap(): m_nodes(64, nullptr), m_node_count(0) { }
             std::size_t capacity () const;
@@ -42,21 +40,12 @@ namespace kemter
         auto item = this->m_nodes.at(index);
 
         if(item == nullptr) {
-            return Value(ValueConstant::NoneValue);
+            return Value();
         }
 
         const auto& value = static_cast<NodePtr>(item).get()->getValue();
         const std::type_info& ti = value.type();
-
-        if(ti == typeid(kemter::type::TypeWrapper<std::string>)) {
-            return kemter::type::TypeParser<std::string>(value);
-        } else if(ti == typeid(kemter::type::TypeWrapper<int>)) {
-            return kemter::type::TypeParser<int>(value);
-        } else if(ti == typeid(kemter::type::TypeWrapper<float>)) {
-            return kemter::type::TypeParser<float>(value);
-        } else {
-            return Value(ValueConstant::NoneValue);
-        }
+        return kemter::type::TypeCheck<Value>(ti, value);
     };
 
     template <typename Key, typename Value, typename Hash>

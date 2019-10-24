@@ -33,5 +33,23 @@ namespace kemter::type
         const auto& value = std::any_cast<Type<Value>*>(type.get())->value();
         return value;
     }
+
+    template<typename Value>
+    Value TypeCheck(const std::type_info& ti, const std::any& value) {
+        
+        if(!value.has_value()) {
+            return Value();
+        }
+
+        if(ti == typeid(TypeWrapper<std::string>)) {
+            return TypeParser<std::string>(value);
+        } else if(ti == typeid(TypeWrapper<int>)) {
+            return TypeParser<int>(value);
+        } else if(ti == typeid(TypeWrapper<float>)) {
+            return TypeParser<float>(value);
+        } else {
+            return Value();
+        }
+    }
 };
 #endif // !basetype_H

@@ -28,4 +28,14 @@ TEST(KemterTypeTest, TypeTest) {
     ASSERT_EQ(std::any_cast<std::string>(test), "value1");
     ASSERT_EQ(std::any_cast<int>(test2), 1123);
     ASSERT_EQ(std::any_cast<float>(test3), 2.f);
+
+    map.put("key1", std::make_shared<TypeWrapper<int>>(1));
+    const auto& newValue = map.get("key1");
+    ASSERT_EQ(std::any_cast<int>(newValue), 1);
+
+    map.remove("key1");
+    ASSERT_EQ(map.size(), 2);
+    
+    const auto& deletedValue = map.get("key1");
+    ASSERT_FALSE(deletedValue.has_value());
 }
