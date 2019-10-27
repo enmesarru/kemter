@@ -8,19 +8,10 @@
 class kemterdb
 {
 private:
-    kemter::kemter_hmap<std::string, std::any> table;
+    kemter::kemter_hmap<std::string, kemter::type::TypeWrapper> table;
 public:
-    kemterdb(/* args */);
+    kemterdb();
     ~kemterdb();
 };
-
-kemterdb::kemterdb(/* args */)
-{
-}
-
-kemterdb::~kemterdb()
-{
-}
-
 
 #endif // !KEMTER_DB_H

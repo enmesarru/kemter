@@ -19,7 +19,7 @@ namespace kemter
     };
 
     template <typename Key, typename Value>
-    kemter::kemter_hnode<Key, Value>::kemter_hnode()
+    kemter_hnode<Key, Value>::kemter_hnode()
     {
 
     }

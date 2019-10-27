@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <type_traits>
-#include <any>
+#include <variant>
 #include <iostream>
 #include <experimental/vector>
 #include "kemter_hnode.h"
@@ -34,22 +34,20 @@ namespace kemter
     };
 
     template <typename Key, typename Value, typename Hash>
-    Value kemter::kemter_hmap<Key, Value, Hash>::get(const Key& key) {
+    Value kemter_hmap<Key, Value, Hash>::get(const Key& key) {
 
         auto index = this->hash(key);
         auto item = this->m_nodes.at(index);
-
-        if(item == nullptr) {
-            return Value();
+        // ToDo: return something when item does not exist
+        if(!item) {
+            return kemter::type::ErrorCode::NodeNotExist;
         }
-
-        const auto& value = static_cast<NodePtr>(item).get()->getValue();
-        const std::type_info& ti = value.type();
-        return kemter::type::TypeCheck<Value>(ti, value);
+        auto value = item.get()->getValue();
+        return value;
     };
 
     template <typename Key, typename Value, typename Hash>
-    void kemter::kemter_hmap<Key, Value, Hash>::add(const Key& key, const Value& value)
+    void kemter_hmap<Key, Value, Hash>::add(const Key& key, const Value& value)
     {
         auto index = this->hash(key);
         if(this->m_nodes.at(index) != nullptr) {
@@ -67,7 +65,7 @@ namespace kemter
     }
 
     template <typename Key, typename Value, typename Hash>
-    void kemter::kemter_hmap<Key, Value, Hash>::put(const Key& key, const Value& value)
+    void kemter_hmap<Key, Value, Hash>::put(const Key& key, const Value& value)
     {
         auto index = this->hash(key);
         if(this->m_nodes.at(index) == nullptr) {
@@ -77,17 +75,17 @@ namespace kemter
     }
 
     template <typename Key, typename Value, typename Hash>
-    std::size_t kemter::kemter_hmap<Key, Value, Hash>::capacity () const {
+    std::size_t kemter_hmap<Key, Value, Hash>::capacity () const {
         return this->m_nodes.capacity();
     }
 
     template <typename Key, typename Value, typename Hash>
-    std::size_t kemter::kemter_hmap<Key, Value, Hash>::size () const {
+    std::size_t kemter_hmap<Key, Value, Hash>::size () const {
         return this->m_node_count;
     }
 
     template <typename Key, typename Value, typename Hash>
-    void kemter::kemter_hmap<Key, Value, Hash>::remove(const Key& key)
+    void kemter_hmap<Key, Value, Hash>::remove(const Key& key)
     {
         std::size_t index = this->hash(key);
         if(this->m_nodes.at(index) == nullptr) {
@@ -98,7 +96,7 @@ namespace kemter
     }
 
     template <typename Key, typename Value, typename Hash>
-    std::size_t kemter::kemter_hmap<Key, Value, Hash>::hash(const Key& key)
+    std::size_t kemter_hmap<Key, Value, Hash>::hash(const Key& key)
     {
         auto hash = Hash()(key);
         return hash % this->capacity();

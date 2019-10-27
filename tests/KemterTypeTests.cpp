@@ -1,41 +1,46 @@
 #include <memory>
-#include <any>
+#include <variant>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <string>
 #include "kemter_types.h"
 #include "kemter_hmap.h"
 
-template<typename T>
-using TypeWrapper = kemter::type::gdata_type<T>;
 TEST(KemterTypeTest, TypeTest) {
-    kemter::kemter_hmap<std::string, std::any> map;
-
-    auto value1 = std::make_shared<TypeWrapper<std::string>>("value1");
-    auto value2 = std::make_shared<TypeWrapper<int>>(1123);
-    auto value3 = std::make_shared<TypeWrapper<float>>(2.f);
+    kemter::kemter_hmap<std::string, kemter::type::TypeWrapper> map;;
     
-    map.add("key1", value1);
-    map.add("key2", value2);
-    map.add("key3", value3);
+    map.add("key1", kemter::type::Type<int>(123));
+    map.add("key2", kemter::type::Type<std::string>("furkan"));
 
-    ASSERT_EQ(map.size(), 3);
-    
-    const auto& test = map.get("key1");
-    const auto& test2 = map.get("key2");
-    const auto& testNone = map.get("key6");
-    const auto& test3 = map.get("key3");
-
-    ASSERT_EQ(std::any_cast<std::string>(test), "value1");
-    ASSERT_EQ(std::any_cast<int>(test2), 1123);
-    ASSERT_EQ(std::any_cast<float>(test3), 2.f);
-
-    map.put("key1", std::make_shared<TypeWrapper<int>>(1));
-    const auto& newValue = map.get("key1");
-    ASSERT_EQ(std::any_cast<int>(newValue), 1);
-
-    map.remove("key1");
     ASSERT_EQ(map.size(), 2);
     
-    const auto& deletedValue = map.get("key1");
-    ASSERT_FALSE(deletedValue.has_value());
+    // auto test2 = std::get<0>(map.get("key1")).value(); // get value, directly
+    // auto test2 = std::get<1>(map.get("key2"));
+    
+    std::vector<kemter::type::TypeWrapper> container;
+
+    auto testInt = map.get("key1");
+    auto testString = map.get("key2");
+    auto testNone =  map.get("key10");
+
+    container.push_back(testInt);
+    container.push_back(testString);
+    container.push_back(testNone);
+    
+    for(auto& data: container) {
+        std::visit(
+            kemter::type::base_visitor(
+                [](kemter::type::Type<int> j) { ASSERT_EQ(j.value(), 123); },
+                [](kemter::type::Type<std::string> s) { ASSERT_EQ(s.value(), "furkan"); },
+                [](auto &&) { std::cout << "unknown type";}
+            )
+        , data);
+    }
+
+    map.put("key1", kemter::type::Type<int>(99));
+    auto newValue = map.get("key1");
+    ASSERT_EQ(std::get<0>(newValue).value(), 99);
+
+    map.remove("key1");
+    ASSERT_EQ(map.size(), 1);
 }

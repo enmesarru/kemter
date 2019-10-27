@@ -2,10 +2,14 @@
 #define basetype_H
 #include <string>
 #include <memory>
-#include <any>
+#include <variant>
 
 namespace kemter::type
 {
+    enum class ErrorCode {
+        NodeNotExist
+    };
+
     template<typename T>
     class gdata_type {
     public:
@@ -23,33 +27,12 @@ namespace kemter::type
     template<typename T>
     using Type = gdata_type<T>;
 
-    template<typename T>
-    using TypeWrapper = std::shared_ptr<Type<T>>;
+    using TypeWrapper = std::variant< Type<int>, Type<std::string>, ErrorCode, std::monostate>;
 
-    template<typename Value>
-    Value TypeParser(const std::any& data)
-    {
-        const auto& type = std::any_cast<TypeWrapper<Value>>(data);
-        const auto& value = std::any_cast<Type<Value>*>(type.get())->value();
-        return value;
-    }
-
-    template<typename Value>
-    Value TypeCheck(const std::type_info& ti, const std::any& value) {
-        
-        if(!value.has_value()) {
-            return Value();
-        }
-
-        if(ti == typeid(TypeWrapper<std::string>)) {
-            return TypeParser<std::string>(value);
-        } else if(ti == typeid(TypeWrapper<int>)) {
-            return TypeParser<int>(value);
-        } else if(ti == typeid(TypeWrapper<float>)) {
-            return TypeParser<float>(value);
-        } else {
-            return Value();
-        }
-    }
+    template <class ...Ts>
+    struct base_visitor: Ts... {
+        base_visitor(Ts const&&... fs) : Ts{fs}... { };
+        using Ts::operator()...;
+    };
 };
 #endif // !basetype_H
