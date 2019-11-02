@@ -3,7 +3,6 @@ include_directories(include)
 file(GLOB source_files
     "*.h"
     "kemterdb.cpp"
-    "server.cpp"
     "main.cpp"
 )
 

@@ -1,6 +1,0 @@
-Data Types
-String
-Object => { a: 1, b: 3}
-Int
-
-Keys will store in the string type.
