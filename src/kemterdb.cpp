@@ -40,7 +40,7 @@ void kemterdb::put(const std::string& key, const kemter::type::TypeWrapper& valu
     
 };
 
-auto kemterdb::get(const std::string& key) {
+kemter::type::TypeWrapper kemterdb::get(const std::string& key) {
     const auto& value = table.get(key);
     return value;
 };

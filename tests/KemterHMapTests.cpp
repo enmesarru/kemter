@@ -1,22 +1,39 @@
 #include <gtest/gtest.h>
 #include "kemter_hmap.h"
 #include "kemterdb.h"
+#include "kemter_types.h"
 
-TEST(KemterMapTests, MapTest)
-{
+TEST(KemterMapTests, MapAddTest) {
     kemter::kemter_hmap<std::string, int> test;
     test.add("test1", 123);
-    test.add("tester", 444);
+    test.add("test2", 4321);
+
     ASSERT_EQ(test.size(), 2);
-    test.remove("tester");
+}
+
+TEST(KemterMapTests, MapRemoveTest) {
+    kemter::kemter_hmap<std::string, int> test;
+
+    test.add("test1", 123);
+    test.add("test2", 4321);
+    test.remove("test1");
+
     ASSERT_EQ(test.size(), 1);
+}
+
+TEST(KemterMapTests, MapPutTest) {
+    kemter::kemter_hmap<std::string, kemter::type::TypeWrapper> test;
+    test.add("test1", 123);
+
     test.put("test1", 555);
 
-    test.remove("qweqw");
+    kemter::type::TypeWrapper wrapper = test.get("test1");
 
-    kemter::kemter_hmap<float, int> c;
-    c.add(1.f, 123);
-    ASSERT_EQ(c.size(), 1);
-    c.remove(1.f);
-    ASSERT_EQ(c.size(), 0);
+    std::visit(
+    kemter::type::base_visitor(
+        [&](kemter::type::Type<int> s) { 
+            ASSERT_EQ(s.value(), 555) ;
+        },
+        [&](auto &&) {  }
+    ), wrapper);
 }

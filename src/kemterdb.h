@@ -14,7 +14,7 @@ public:
     void add(const std::string& key, const kemter::type::TypeWrapper& value);
     bool remove(const std::string& key);
     void put(const std::string& key, const kemter::type::TypeWrapper& value);
-    auto get(const std::string& key);
+    kemter::type::TypeWrapper get(const std::string& key);
 };
 
 #endif // !KEMTER_DB_H

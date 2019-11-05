@@ -6,8 +6,8 @@
 
 namespace kemter::type
 {
-    enum class ErrorCode {
-        NodeNotExist
+    enum class Status {
+        NodeNotExist,
     };
 
     template<typename T>
@@ -27,12 +27,13 @@ namespace kemter::type
     template<typename T>
     using Type = gdata_type<T>;
 
-    using TypeWrapper = std::variant< Type<int>, Type<std::string>, ErrorCode, std::monostate>;
+    using TypeWrapper = std::variant< Type<int>, Type<std::string>, Status, std::monostate>;
 
     template <class ...Ts>
     struct base_visitor: Ts... {
         base_visitor(Ts const&&... fs) : Ts{fs}... { };
         using Ts::operator()...;
     };
+    
 };
 #endif // !basetype_H

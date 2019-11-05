@@ -38,9 +38,8 @@ namespace kemter
 
         auto index = this->hash(key);
         auto item = this->m_nodes.at(index);
-        // ToDo: return something when item does not exist
         if(!item) {
-            return kemter::type::ErrorCode::NodeNotExist;
+            return kemter::type::Status::NodeNotExist;
         }
         auto value = item.get()->getValue();
         return value;
